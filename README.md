@@ -1,5 +1,5 @@
 # Chatgpt-json-format-plugin
-The ChatGPT JSON Plugin is created to work with ChatGPT through JSON requests. 
+The ChatGPT JSON Plugin is made to talk to ChatGPT and get back a response in valid JSON format. 
 It has two primary methods: using prompts and making function calls. 
 If you need JSON responses, the plugin checks if the response is already in JSON or tries to convert it. 
 If needed, the plugin makes repeated attempts to communicate with ChatGPT to ensure a JSON response format.
