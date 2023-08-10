@@ -3,6 +3,7 @@ The ChatGPT JSON Plugin is made to talk to ChatGPT and get back a response in va
 It has two primary methods: using prompts and making function calls. 
 If you need JSON responses, the plugin checks if the response is already in JSON or tries to convert it. 
 If needed, the plugin makes repeated attempts to communicate with ChatGPT to ensure a JSON response format.
+This feature is added to open source project [click](https://github.com/arakoodev/EdgeChains) on here to see open source project
 
 ## video
 
