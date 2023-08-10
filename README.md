@@ -4,6 +4,10 @@ It has two primary methods: using prompts and making function calls.
 If you need JSON responses, the plugin checks if the response is already in JSON or tries to convert it. 
 If needed, the plugin makes repeated attempts to communicate with ChatGPT to ensure a JSON response format.
 
+## video
+
+https://www.loom.com/share/22d020c7b7454cd1af4c2ace3ca977cc
+
 ## Endpoints
 ### Prompt-based Endpoint - This endpoint allows you to send a prompt and get a response from ChatGPT.
 
@@ -41,4 +45,3 @@ Request body format:
 }
 ```
 
-https://www.loom.com/share/22d020c7b7454cd1af4c2ace3ca977cc
