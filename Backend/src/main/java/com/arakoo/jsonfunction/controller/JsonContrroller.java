@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
 public class JsonContrroller {
 
     @Value("${openai.model}")
@@ -34,6 +37,17 @@ public class JsonContrroller {
 
     @Autowired
     private RestTemplate template;
+
+    @PostMapping("/chat")
+    public String chat(@RequestBody String prompt) {
+        System.out.println(prompt);
+        ChatGPTRequest request = new ChatGPTRequest(model, prompt);
+        System.out.println(request);
+        ChatGptResponse chatGptResponse = template.postForObject(apiURL, request, ChatGptResponse.class);
+        System.out.println(chatGptResponse);
+        return chatGptResponse.getChoices().get(0).getMessage().getContent();
+
+    }
 
     @GetMapping("/extract")
     public String extract(@RequestBody UserRequest userRequest) {
