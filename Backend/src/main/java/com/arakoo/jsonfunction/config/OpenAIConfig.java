@@ -11,8 +11,8 @@ public class OpenAIConfig {
     @Value("${openai.api.key}")
     String openaiApiKey;
      
-    @Value("${openai.organization.id}") 
-    private String openaiOrganizationId;
+    // @Value("${openai.organization.id}") 
+    // private String openaiOrganizationId;
 
     @Bean
     public RestTemplate template(){

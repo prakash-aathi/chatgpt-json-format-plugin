@@ -1,6 +1,7 @@
 package com.arakoo.jsonfunction.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,19 +40,61 @@ public class JsonContrroller {
     private RestTemplate template;
 
     @PostMapping("/chat")
-    public String chat(@RequestBody String prompt) {
+    public Object chat(@RequestBody String prompt) {
         System.out.println(prompt);
         ChatGPTRequest request = new ChatGPTRequest(model, prompt);
-        System.out.println(request);
         ChatGptResponse chatGptResponse = template.postForObject(apiURL, request, ChatGptResponse.class);
-        System.out.println(chatGptResponse);
-        return chatGptResponse.getChoices().get(0).getMessage().getContent();
 
+        String res = chatGptResponse.getChoices().get(0).getMessage().getContent();
+        System.out.println(res);
+        HashMap<String, String> map = new HashMap<>();
+        map.put("response", res);
+        return map;
+    }
+
+    @PostMapping("/userStory")
+    public Object userStory(@RequestBody String prompt) {
+
+        String rePrompt = """
+                what ever the question asked you want to response in valid JSON format not any other text.
+                For example if the question is "what is your name" then you want to response in JSON format like this
+                {
+                    "name": "John"
+                }
+                if the user ask particular JSON format then you want to response in that format.
+                if unable to give you response in JSON format then you want to response in these format {"error": "unable to give AI response in JSON format"}
+                The user question is : 
+                """ + prompt ;
+        
+        System.out.println(rePrompt);
+        ChatGPTRequest request = new ChatGPTRequest(model, rePrompt);
+        ChatGptResponse chatGptResponse = template.postForObject(apiURL, request, ChatGptResponse.class);
+
+        if (chatGptResponse == null) {
+            System.out.println("ChatGptResponse is null. There was an error processing the request.");
+            return "Error: Unable to process the request.";
+        }
+
+        System.out.println(chatGptResponse);
+
+        // Verify if the return message is a valid JSON string
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode jsonNode = objectMapper.readTree(chatGptResponse.getChoices().get(0).getMessage().getContent());
+            System.out.println("The response is a valid JSON string." + jsonNode);
+        } catch (Exception e) {
+            System.out.println("The response is not a valid JSON string.");
+        }
+
+        String res = chatGptResponse.getChoices().get(0).getMessage().getContent();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("response", res);
+        return map;
     }
 
     @GetMapping("/extract")
     public String extract(@RequestBody UserRequest userRequest) {
-        
+
         String rePrompt = "INPUT = " + userRequest.getPrompt() + " EXTRACTED = " + userRequest.getFormat()
                 + " Return EXTRACTED as a valid JSON object.";
         System.out.println(rePrompt);
@@ -96,17 +139,18 @@ public class JsonContrroller {
         System.out.println(request);
 
         ChatGptResponse response = template.postForObject(apiURL, request, ChatGptResponse.class);
-        
+
         if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
             System.out.println("ChatGptResponse is null. There was an error processing the request.");
             return "Error: Unable to process the request.";
         }
-        
+
         System.out.println(response.getChoices().get(0).getMessage().getFunction_call());
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            JsonNode jsonNode = objectMapper.readTree(response.getChoices().get(0).getMessage().getFunction_call().getArguments());
+            JsonNode jsonNode = objectMapper
+                    .readTree(response.getChoices().get(0).getMessage().getFunction_call().getArguments());
             System.out.println("The response is a valid JSON string." + jsonNode);
         } catch (Exception e) {
             System.out.println("The response is not a valid JSON string.");
@@ -115,55 +159,55 @@ public class JsonContrroller {
         return response.getChoices().get(0).getMessage().getFunction_call().getArguments();
     }
 
-     @GetMapping("/situation")
-     public String handleSituation(@RequestBody MultiplePromptRequest multiplePromptRequest) {
+    @GetMapping("/situation")
+    public String handleSituation(@RequestBody MultiplePromptRequest multiplePromptRequest) {
 
         String situation = multiplePromptRequest.getSituation();
         String validAction = multiplePromptRequest.getValidAction();
         String callToAction = multiplePromptRequest.getCallToAction();
         String actionFormat = multiplePromptRequest.getActionFormat();
 
-         String getActionPrompt = "This is the situation: " + situation
-                 + " These are the set of valid actions to take: "
-                 + validAction + " " + callToAction;
+        String getActionPrompt = "This is the situation: " + situation
+                + " These are the set of valid actions to take: "
+                + validAction + " " + callToAction;
 
-         ChatGPTRequest request = new ChatGPTRequest(model, getActionPrompt);
-         ChatGptResponse chatGptResponse = template.postForObject(apiURL, request, ChatGptResponse.class);
-         String response1 = chatGptResponse.getChoices().get(0).getMessage().getContent();
-         System.out.println("response1: " + response1);
+        ChatGPTRequest request = new ChatGPTRequest(model, getActionPrompt);
+        ChatGptResponse chatGptResponse = template.postForObject(apiURL, request, ChatGptResponse.class);
+        String response1 = chatGptResponse.getChoices().get(0).getMessage().getContent();
+        System.out.println("response1: " + response1);
 
-         String validActionCheckPrompt = "Given the situation: " + situation + " And the action you chose: " + response1
-                 + " Is the action you in this set of valid actions: " + validAction
-                 + "? If not, choose the best valid action to take. If so, please return the original action";
+        String validActionCheckPrompt = "Given the situation: " + situation + " And the action you chose: " + response1
+                + " Is the action you in this set of valid actions: " + validAction
+                + "? If not, choose the best valid action to take. If so, please return the original action";
 
-         ChatGPTRequest request2 = new ChatGPTRequest(model, validActionCheckPrompt);
-         ChatGptResponse chatGptResponse2 = template.postForObject(apiURL, request2, ChatGptResponse.class);
-         String response2 = chatGptResponse2.getChoices().get(0).getMessage().getContent();
-         System.out.println("response2: " + response2);
+        ChatGPTRequest request2 = new ChatGPTRequest(model, validActionCheckPrompt);
+        ChatGptResponse chatGptResponse2 = template.postForObject(apiURL, request2, ChatGptResponse.class);
+        String response2 = chatGptResponse2.getChoices().get(0).getMessage().getContent();
+        System.out.println("response2: " + response2);
 
-         String getActionFormat = "This is the correct format for an action: " + actionFormat
-                 + " This is the chosen action: " + response2 + " Convert the chosen action to the correct format.";
+        String getActionFormat = "This is the correct format for an action: " + actionFormat
+                + " This is the chosen action: " + response2 + " Convert the chosen action to the correct format.";
 
-         ChatGPTRequest request3 = new ChatGPTRequest(model, getActionFormat);
-         ChatGptResponse chatGptResponse3 = template.postForObject(apiURL, request3, ChatGptResponse.class);
-         String response3 = chatGptResponse3.getChoices().get(0).getMessage().getContent();
-         System.out.println("response3: " + response3);
+        ChatGPTRequest request3 = new ChatGPTRequest(model, getActionFormat);
+        ChatGptResponse chatGptResponse3 = template.postForObject(apiURL, request3, ChatGptResponse.class);
+        String response3 = chatGptResponse3.getChoices().get(0).getMessage().getContent();
+        System.out.println("response3: " + response3);
 
-         try {
-             ObjectMapper objectMapper = new ObjectMapper();
-             JsonNode jsonNode = objectMapper.readTree(response3);
-             System.out.println("The response is a valid JSON string." + jsonNode);
-             return response3;
-         } catch (Exception e) {
-             System.out.println("The response is not a valid JSON string so retrying.");
-             String getValidFormat = "This is the correct format for an action: " + actionFormat
-                     + " This is a formatted action: " + response3 + " Return the action in the correct format.";
-             ChatGPTRequest request4 = new ChatGPTRequest(model, getValidFormat);
-             ChatGptResponse chatGptResponse4 = template.postForObject(apiURL, request4, ChatGptResponse.class);
-             String response4 = chatGptResponse4.getChoices().get(0).getMessage().getContent();
-             System.out.println("Final Response: " + response4);
-             return response4;
-         }
-     }
-    
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(response3);
+            System.out.println("The response is a valid JSON string." + jsonNode);
+            return response3;
+        } catch (Exception e) {
+            System.out.println("The response is not a valid JSON string so retrying.");
+            String getValidFormat = "This is the correct format for an action: " + actionFormat
+                    + " This is a formatted action: " + response3 + " Return the action in the correct format.";
+            ChatGPTRequest request4 = new ChatGPTRequest(model, getValidFormat);
+            ChatGptResponse chatGptResponse4 = template.postForObject(apiURL, request4, ChatGptResponse.class);
+            String response4 = chatGptResponse4.getChoices().get(0).getMessage().getContent();
+            System.out.println("Final Response: " + response4);
+            return response4;
+        }
+    }
+
 }
