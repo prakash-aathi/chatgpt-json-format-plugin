@@ -7,6 +7,11 @@ import Response from '../components/Response'
 import chatRequest from '../fetch/ChatFetch'
 import Loader from '../components/Loader'
 
+type conversation = {
+    prompt: string,
+    response: object
+}
+
 const Chat = () => {
 
     const [promptChange, setPromptChange] = useState<string>("");
@@ -14,16 +19,16 @@ const Chat = () => {
     const [prompt, setPrompt] = useState<string>("");
     const [response, setResponse] = useState({});
 
+    const [chatHistory, setChatHistory] = useState<conversation[]>([]);
+
     const handleSubmit = () => {
         setResponse({});
         setLoading(true);
         setPrompt(promptChange);
-        setPromptChange("");
-        console.log(promptChange);
         chatRequest(promptChange).then((res) => {
-            console.log(res);
-            console.log(res.response);
+            setChatHistory([...chatHistory, { prompt: promptChange, response: res.response }]);
             setResponse(res.response);
+            setPromptChange("");
             setLoading(false);
         }).catch((err) => {
             console.log(err);
@@ -35,9 +40,14 @@ const Chat = () => {
     return (
         <div className=' min-h-screen '>
             <Header />
-            <UserQsn prompt={prompt} loading={loading} />
+            {
+                chatHistory.map((item, index) => <>
+                    <UserQsn prompt={item.prompt} loading={false} />
+                    <Response response={item.response} />
+                </>)
+            }
             {loading && <Loader />}
-            <Response response={response} />
+
             <InputForm setPrompt={setPromptChange} prompt={promptChange} handleSubmit={handleSubmit} />
 
         </div>

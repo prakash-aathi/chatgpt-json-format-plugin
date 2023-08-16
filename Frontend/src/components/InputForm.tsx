@@ -15,11 +15,11 @@ export const InputForm = ({ setPrompt, prompt, handleSubmit }: Props) => {
     };
 
     return (
-        <div className='fixed flex justify-center items-center bottom-0 left-0 w-full text-center p-4'>
+        <div className='fixed flex bg-red-20  justify-center items-center bottom-0 left-0 w-full text-center '>
             <textarea
                 className='my-2 py-3 px-4 mx-2 mr-2 rounded-xl md:w-[50%] w-full focus-within:outline-none 
                 focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-transparent
-                max-w-[1000px] max-h-[300px] min-h-[100px] bg-gray-100 drop-shadow-2xl border-2 
+                max-w-[1000px] max-h-[300px] min-h-[80px] bg-gray-100 drop-shadow-2xl border-2 
                 border-sky-500'
                 placeholder='Enter your prompt'
                 onChange={(e) => setPrompt(e.target.value)}
