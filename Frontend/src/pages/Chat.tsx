@@ -15,6 +15,7 @@ const Chat = () => {
     const [response, setResponse] = useState({});
 
     const handleSubmit = () => {
+        setResponse({});
         setLoading(true);
         setPrompt(promptChange);
         setPromptChange("");
@@ -34,8 +35,8 @@ const Chat = () => {
     return (
         <div className=' min-h-screen '>
             <Header />
-            <UserQsn prompt={prompt} />
-            {!loading && <Loader />}
+            <UserQsn prompt={prompt} loading={loading} />
+            {loading && <Loader />}
             <Response response={response} />
             <InputForm setPrompt={setPromptChange} prompt={promptChange} handleSubmit={handleSubmit} />
 

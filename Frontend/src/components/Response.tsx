@@ -22,12 +22,12 @@ const Response = ({ response }: props) => {
     return (
         <div className=''>
             { JSON.stringify(response) !== '{}' && (
-                <div className='w-[60%] flex mx-auto mb-20 pb-20 mt-10'>
+                <div className='md:w-[60%] mx-2 flex md:mx-auto mb-20 pb-20 mt-4'>
                     <div className='mr-4 font-semibold text-xl mt-8'>AI</div>
                     <div className='bg-gray-200 font-medium py-4 px-4 drop-shadow-xl my-4 rounded-xl whitespace-pre-line w-full'>
                         <div className='p-4 border rounded-lg bg-gray-900 text-white'>
-                            <div className='flex justify-between items-center mb-2'>
-                                <h2 className='text-lg font-semibold'>JSON Data</h2>
+                            <div className='md:flex justify-between items-center mb-2'>
+                                <h2 className='text-lg text-center font-semibold'>JSON Data</h2>
 
                                 <div>
                                     <button
