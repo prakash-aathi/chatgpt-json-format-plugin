@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.arakoo.jsonfunction.config.OpenAIConfig;
 import com.arakoo.jsonfunction.dto.ChatGPTFunctionRequest;
 import com.arakoo.jsonfunction.dto.ChatGPTRequest;
 import com.arakoo.jsonfunction.dto.ChatGptResponse;
@@ -53,13 +55,14 @@ public class JsonContrroller {
     }
 
     @PostMapping("/userStory")
-    public Object userStory(@RequestBody String prompt) {
-
+    public Object userStory(@RequestBody String prompt, @RequestHeader("Authorization") String api) {
+        
+        OpenAIConfig.apiKey = api;
         String rePrompt = """
                 what ever the question asked you want to response in valid JSON format not any other text.
                 For example if the question is "what is your name" then you want to response in JSON format like this
                 {
-                    "name": "John"
+                    "name": "Prakash"
                 }
                 if the user ask particular JSON format then you want to response in that format.
                 if unable to give you response in JSON format then you want to response in these format {"error": "unable to give AI response in JSON format"}
