@@ -16,18 +16,13 @@ const Chat = () => {
 
     const [promptChange, setPromptChange] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-    const [prompt, setPrompt] = useState<string>("");
-    const [response, setResponse] = useState({});
 
     const [chatHistory, setChatHistory] = useState<conversation[]>([]);
 
     const handleSubmit = () => {
-        setResponse({});
         setLoading(true);
-        setPrompt(promptChange);
         chatRequest(promptChange).then((res) => {
             setChatHistory([...chatHistory, { prompt: promptChange, response: res.response }]);
-            setResponse(res.response);
             setPromptChange("");
             setLoading(false);
         }).catch((err) => {
@@ -42,13 +37,15 @@ const Chat = () => {
             <Header />
             {
                 chatHistory.map((item, index) => <>
-                    <UserQsn prompt={item.prompt} loading={false} />
-                    <Response response={item.response} />
+                    <div key={index}>
+                        <UserQsn prompt={item.prompt} loading={false} />
+                        <Response response={item.response} />
+                    </div>
                 </>)
             }
             {loading && <Loader />}
 
-            <InputForm setPrompt={setPromptChange} prompt={promptChange} handleSubmit={handleSubmit} />
+            <InputForm setPrompt={setPromptChange} prompt={promptChange} handleSubmit={handleSubmit} loading={loading} />
 
         </div>
     )

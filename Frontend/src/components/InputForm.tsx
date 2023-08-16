@@ -3,10 +3,11 @@ import React from 'react';
 type Props = {
     prompt: string,
     setPrompt: React.Dispatch<React.SetStateAction<string>>,
-    handleSubmit: () => void
+    handleSubmit: () => void,
+    loading: boolean
 };
 
-export const InputForm = ({ setPrompt, prompt, handleSubmit }: Props) => {
+export const InputForm = ({ setPrompt, prompt, handleSubmit,loading }: Props) => {
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.ctrlKey && e.key === 'Enter') {
@@ -26,10 +27,10 @@ export const InputForm = ({ setPrompt, prompt, handleSubmit }: Props) => {
                 onKeyDown={handleKeyDown}
                 value={prompt}
             />
-            <div className='bg-blue-600 text-white rounded-full px-3 py-3 my-2 cursor-pointer hover:bg-blue-500'
-                 onClick={handleSubmit}>
-                Go
-            </div>
+            <button className='bg-blue-600 text-white rounded-full px-3 py-3 my-2 cursor-pointer hover:bg-blue-500'
+                 onClick={handleSubmit}  disabled={loading}>
+                {loading ? 'Loading...' : 'Go'}
+            </button>
         </div>
     );
 };
